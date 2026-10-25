@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Pause, Play, Phone } from "lucide-react";
 import gsap from "gsap";
+import { MOTION } from "@/lib/motion";
 import { Button } from "@/components/ui/button";
 import { SITE, telLink } from "@/lib/site";
 import { SocialLinks } from "@/components/site/SocialLinks";
-import { useCatalog } from "@/lib/storefront";
 import heroDoor from "@/assets/hero-door.jpg";
 import heroBackdrop from "@/assets/hero-door-backdrop.jpg";
 import heroSteel from "@/assets/hero-door-steel.jpg";
@@ -26,7 +26,6 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const MAIN_HERO_DELAY_MS = 20_000;
 
 export function Hero() {
-  const { categories } = useCatalog();
   const slides = MAIN_BACKGROUNDS.map(background => ({ ...background, label: background.alt }));
   const count = slides.length;
   const [active, setActive] = useState(0);
@@ -42,7 +41,26 @@ export function Hero() {
     const media = gsap.matchMedia();
     media.add("(prefers-reduced-motion: no-preference)", () => {
       const ctx = gsap.context(() => {
-        gsap.fromTo(".hero-reveal", { y: 32, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: 0.13, ease: "power3.out" });
+        const intro = gsap.timeline();
+        const firstImage = imageRefs.current[0];
+        if (firstImage) {
+          intro.fromTo(firstImage,
+            { scale: 1.06 },
+            { scale: 1, duration: MOTION.duration.heroBackground, ease: MOTION.ease.default },
+            MOTION.delay.heroBackground);
+          intro.fromTo(firstImage,
+            { clipPath: "inset(0 0 0 100%)" },
+            { clipPath: "inset(0 0 0 0%)", duration: MOTION.duration.imageMask, ease: MOTION.ease.emphasis },
+            MOTION.delay.imageMask);
+        }
+        intro
+          .fromTo(".hero-copy .eyebrow", { y: 35, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: MOTION.duration.decorative, ease: MOTION.ease.default }, MOTION.delay.logoReveal)
+          .fromTo(".hero-heading", { y: 35, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: MOTION.duration.headline, ease: MOTION.ease.smooth }, MOTION.delay.headline)
+          .fromTo(".hero-description", { y: 35, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: MOTION.duration.decorative, ease: MOTION.ease.default }, MOTION.delay.paragraph)
+          .fromTo(".hero-shop-button", { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: MOTION.duration.primaryCta, ease: MOTION.ease.default }, MOTION.delay.primaryCta)
+          .fromTo(".hero-feature-row", { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: MOTION.duration.standard, ease: MOTION.ease.default }, MOTION.delay.secondaryCta)
+          .fromTo(".hero-social", { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: MOTION.duration.scrollIndicator, ease: MOTION.ease.default }, 1)
+          .fromTo(".hero-controls", { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: MOTION.duration.scrollIndicator, ease: "power2.out" }, MOTION.delay.scrollIndicator);
       }, root);
       return () => ctx.revert();
     });
@@ -64,8 +82,8 @@ export function Hero() {
       gsap.set(imageRefs.current.filter(Boolean), { zIndex: 0 });
       gsap.set(outgoing, { zIndex: 1 });
       gsap.set(incoming, { zIndex: 2 });
-      gsap.fromTo(incoming, { clipPath: "inset(0 0 0 100%)", xPercent: 0 }, { clipPath: "inset(0 0 0 0%)", duration: reduced ? 0 : 1.1, ease: "power4.inOut" });
-      gsap.to(outgoing, { xPercent: -8, duration: reduced ? 0 : 1.1, ease: "power4.inOut" });
+      gsap      .fromTo(incoming, { clipPath: "inset(0 0 0 100%)", xPercent: 0 }, { clipPath: "inset(0 0 0 0%)", duration: reduced ? 0 : MOTION.duration.image, ease: MOTION.ease.emphasis, overwrite: "auto" });
+      gsap.to(outgoing, { xPercent: -8, duration: reduced ? 0 : MOTION.duration.image, ease: MOTION.ease.emphasis, overwrite: "auto" });
     }
     previous.current = active;
   }, [active]);
@@ -84,16 +102,15 @@ export function Hero() {
         gsap.set(mainRef.current, { autoAlpha: 1 });
         return;
       }
-      const tl = gsap.timeline();
+      const tl = gsap.timeline({ defaults: { overwrite: "auto" } });
       tl.fromTo(mainRef.current,
         { autoAlpha: 0, clipPath: "inset(100% 0% 0% 0%)" },
-        { autoAlpha: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 1, ease: "power4.inOut" })
-        .fromTo(".main-hero-reveal", { y: 44, opacity: 0 }, { y: 0, opacity: 1, duration: 0.85, stagger: 0.1, ease: "power3.out" }, "-=0.3")
-        .fromTo(".main-hero-word", { yPercent: 110 }, { yPercent: 0, duration: 0.9, stagger: 0.07, ease: "power4.out" }, "-=0.7")
-        .fromTo(".main-hero-chip", { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.05, ease: "power2.out" }, "-=0.5")
-        .fromTo(".main-hero-badge", { scale: 0, rotate: -12 }, { scale: 1, rotate: 0, duration: 0.7, ease: "back.out(2)" }, "-=0.35");
+        { autoAlpha: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: MOTION.ease.emphasis })
+        .fromTo(".main-hero-reveal", { y: 35, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7, stagger: MOTION.stagger.section, ease: MOTION.ease.default }, "-=0.3")
+        .fromTo(".main-hero-word", { yPercent: 110 }, { yPercent: 0, duration: 0.9, stagger: MOTION.stagger.default, ease: MOTION.ease.smooth }, "-=0.7")
+        .fromTo(".main-hero-badge", { scale: 0, rotate: -12 }, { scale: 1, rotate: 0, duration: MOTION.duration.standard, ease: MOTION.ease.elastic }, "-=0.35");
       // Ken Burns on the backdrop, added last so it never delays the copy above.
-      tl.fromTo(".main-hero-bg-first", { scale: 1.18 }, { scale: 1.06, duration: 2.4, ease: "power2.out" }, 0.2);
+      tl.fromTo(".main-hero-bg-first", { scale: 1.06 }, { scale: 1, duration: 1.3, ease: MOTION.ease.default }, 0.2);
     }, root);
     return () => ctx.revert();
   }, [mainHero]);
@@ -115,9 +132,9 @@ export function Hero() {
         const start = index * 8 + 7;
         cycle.set(outgoing, { zIndex: 1 }, start)
           .set(incoming, { autoAlpha: 1, zIndex: 2, xPercent: 0, scale: 1.06, clipPath: "inset(0 0 0 100%)" }, start)
-          .to(incoming, { clipPath: "inset(0 0 0 0%)", duration: 1.25, ease: "power4.inOut" }, start)
-          .to(outgoing, { xPercent: -8, duration: 1.25, ease: "power4.inOut" }, start)
-          .set(outgoing, { autoAlpha: 0, zIndex: 0, xPercent: 0 }, start + 1.25);
+          .to(incoming, { clipPath: "inset(0 0 0 0%)", duration: MOTION.duration.image, ease: MOTION.ease.emphasis }, start)
+          .to(outgoing, { xPercent: -8, duration: MOTION.duration.image, ease: MOTION.ease.emphasis }, start)
+          .set(outgoing, { autoAlpha: 0, zIndex: 0, xPercent: 0 }, start + MOTION.duration.image);
       });
     }, mainRef);
     return () => ctx.revert();
@@ -175,12 +192,7 @@ export function Hero() {
               <p className="main-hero-description main-hero-reveal mt-6 max-w-md text-sm leading-7 text-white/70">
                 Every kind of security door for your home, shop or office — ordered today, paid for on delivery.
               </p>
-              <div className="main-hero-categories mt-6 flex flex-wrap gap-2">
-                {categories.slice(0, 6).map((c, i) => (
-                  <span key={c.slug} className={`main-hero-chip rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[10px] font-medium text-white/80 backdrop-blur-sm sm:px-3.5 sm:text-[11px] ${i === 3 ? "hidden sm:inline-flex" : i > 3 ? "hidden md:inline-flex" : ""}`}>{c.short}</span>
-                ))}
-              </div>
-              <div className="main-hero-actions main-hero-reveal mt-8 flex flex-wrap items-center gap-3">
+              <div className="main-hero-actions main-hero-reveal mt-6 flex flex-wrap items-center gap-3">
                 <Button asChild className="h-12 rounded-full px-7 text-xs"><Link to="/shop">Shop all doors <ArrowUpRight className="size-4" /></Link></Button>
                 {SITE.phone && <Button asChild variant="outline" className="h-12 rounded-full border-white/25 bg-white/5 px-7 text-xs text-white backdrop-blur-sm hover:bg-white/15 hover:text-white">
                   <a href={telLink(SITE.phone)}><Phone className="size-4" /> Order: {SITE.phone}</a>

@@ -11,6 +11,6 @@ export function ProductPrice({ p, large = false }: { p: Product; large?: boolean
 export function ProductStars() {
   return <div className="mt-2 flex flex-wrap items-center gap-2" aria-label="Unrated — decorative five stars">
     <span className="flex gap-0.5 text-primary" aria-hidden="true">{[0, 1, 2, 3, 4].map((i) => <Star key={i} className="size-3 fill-primary" />)}</span>
-    <span className="text-[10px] text-muted-foreground">Not yet rated</span>
+    <span className="text-[10px] text-muted-foreground">Rate</span>
   </div>;
 }

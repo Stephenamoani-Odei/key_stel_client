@@ -7,6 +7,7 @@ import { canBuy, getProduct, CURRENCY } from "@/lib/catalog";
 import { useStore } from "@/lib/store";
 import { storefrontQuery, useCatalog } from "@/lib/storefront";
 import { CatalogImage } from "@/components/site/CatalogImage";
+import { Reveal, RevealImage } from "@/components/site/TextReveal";
 import { NotFoundMessage } from "@/components/site/NotFoundMessage";
 import { whatsappLink } from "@/lib/site";
 import { ProductCard, StockBadge } from "@/components/site/ProductCard";
@@ -69,9 +70,9 @@ function ProductPage() {
       </nav>
       <div className="product-layout grid gap-10 lg:grid-cols-2">
         <div>
-          <div className="product-gallery aspect-[4/5] overflow-hidden bg-surface">
+          <RevealImage className="product-gallery aspect-[4/5] overflow-hidden bg-surface">
             <CatalogImage src={p.images[img] ?? p.images[0]} alt={p.name} className="h-full w-full object-cover" />
-          </div>
+          </RevealImage>
           {p.images.length > 1 && (
             <div className="mt-3 flex gap-3">
               {p.images.map((src, i) => (
@@ -82,7 +83,7 @@ function ProductPage() {
             </div>
           )}
         </div>
-        <div className="product-info">
+        <Reveal className="product-info">
           <h1 className="mt-3 text-4xl font-black">{p.name}</h1>
           <ProductStars />
           <div className="mt-5"><ProductPrice p={p} large /></div>
@@ -113,7 +114,7 @@ function ProductPage() {
             <Truck className="h-5 w-5 shrink-0 text-primary" />
             <p>Delivery arrangements and charges are confirmed with you after ordering. See <Link to="/delivery-returns" className="font-bold text-primary">Delivery & Returns</Link>.</p>
           </div>
-        </div>
+        </Reveal>
       </div>
       {related.length > 0 && (
         <section className="mt-20">

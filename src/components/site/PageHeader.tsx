@@ -1,16 +1,16 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import { Reveal, RevealWords } from "@/components/site/TextReveal";
+import { Reveal, RevealImage, RevealWords } from "@/components/site/TextReveal";
 export function PageHeader({ eyebrow, title, children, image }: { eyebrow?: string; title: string; children?: ReactNode; image?: string | undefined }) {
   const photo = Boolean(image);
   return (
     <section className={`page-heading border-b ${photo ? "page-heading-photo" : "bg-surface"}`}>
       {photo && image && (
-        <div className="page-heading-media" aria-hidden="true">
+        <RevealImage className="page-heading-media" aria-hidden={true}>
           <img src={image} alt="" />
           <span className="page-heading-scrim" />
-        </div>
+        </RevealImage>
       )}
       <div className="container-x py-10 sm:py-14">
         <div className="mb-6 flex items-center justify-between">
@@ -24,5 +24,5 @@ export function PageHeader({ eyebrow, title, children, image }: { eyebrow?: stri
   );
 }
 export function Prose({ children }: { children: ReactNode }) {
-  return <div className="container-x max-w-3xl py-14 space-y-6 text-sm text-foreground/85 leading-8 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold">{children}</div>;
+  return <Reveal className="container-x max-w-3xl py-14 space-y-6 text-sm text-foreground/85 leading-8 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold" staggerChildren=":scope > *" duration={0.65}>{children}</Reveal>;
 }

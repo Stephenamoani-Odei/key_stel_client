@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { sendInquiry } from "@/lib/inquiries.functions";
+import { whatsappLink } from "@/lib/site";
 
 export interface FieldDef { name: string; label: string; type?: string; required?: boolean; textarea?: boolean; defaultValue?: string | undefined }
 
@@ -15,6 +16,7 @@ export function EnquiryForm({ fields, submitLabel, kind = "contact" }: { fields:
   const [formErr, setFormErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [whatsappUnavailable, setWhatsappUnavailable] = useState(false);
 
   const schema = z.object(Object.fromEntries(fields.map((f) => {
     let s: z.ZodTypeAny = z.string().trim().max(f.textarea ? 1500 : 200);
@@ -39,10 +41,23 @@ export function EnquiryForm({ fields, submitLabel, kind = "contact" }: { fields:
       .filter((f) => f.name !== "name" && f.name !== "phone" && value(f.name))
       .map((f) => (f.textarea ? `${f.label}:\n${value(f.name)}` : `${f.label}: ${value(f.name)}`));
     const message = [kind === "quote" ? "QUOTE REQUEST" : "", ...details].filter(Boolean).join("\n");
+    const quoteWhatsApp = kind === "quote"
+      ? whatsappLink([
+          "QUOTE REQUEST",
+          ...fields.filter((f) => value(f.name)).map((f) => `${f.label}: ${value(f.name)}`),
+        ].join("\n"))
+      : null;
     setBusy(true);
     try {
       const res = await send({ data: { name: value("name"), phone: value("phone"), message, website: raw["website"] ?? "" } });
-      if (res.ok) setDone(true); else setFormErr(res.error);
+      if (res.ok && !raw["website"]?.trim() && quoteWhatsApp) {
+        window.location.assign(quoteWhatsApp);
+      } else if (res.ok) {
+        setWhatsappUnavailable(kind === "quote" && !raw["website"]?.trim());
+        setDone(true);
+      } else {
+        setFormErr(res.error);
+      }
     } catch {
       setFormErr("We could not send your message right now. Please call us instead.");
     } finally {
@@ -54,8 +69,14 @@ export function EnquiryForm({ fields, submitLabel, kind = "contact" }: { fields:
     return (
       <div className="rounded-xl border bg-surface p-8">
         <CheckCircle2 className="h-8 w-8 text-primary" />
-        <h3 className="mt-3 text-xl font-bold">{kind === "quote" ? "Quote request sent" : "Message sent"}</h3>
-        <p className="mt-1 text-muted-foreground">Thank you. A member of the KEY-STEL team will call you back soon.</p>
+        <h3 className="mt-3 text-xl font-bold">
+          {kind === "quote" && whatsappUnavailable ? "Quote request saved" : kind === "quote" ? "Quote request sent" : "Message sent"}
+        </h3>
+        <p className="mt-1 text-muted-foreground">
+          {whatsappUnavailable
+            ? "Your quote request was saved, but WhatsApp is not configured. Please call us to follow up."
+            : "Thank you. A member of the KEY-STEL team will call you back soon."}
+        </p>
         <Button className="btn btn-secondary mt-5" onClick={() => setDone(false)}>Send another</Button>
       </div>
     );

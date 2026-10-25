@@ -4,6 +4,8 @@ import cartIcon from "@/assets/cart-icon.png";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MOTION, registerScrollTrigger } from "@/lib/motion";
 import { Brand } from "./Brand";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
@@ -22,10 +24,39 @@ export function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [catsOpen, setCatsOpen] = useState(false);
   const catsRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const catsScroll = useScrollNav("y");
   const [q, setQ] = useState("");
   const closeRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
+  useEffect(() => {
+    registerScrollTrigger();
+    const header = headerRef.current;
+    if (!header) return;
+    const media = gsap.matchMedia();
+    media.add("(min-width: 1024px)", () => {
+      const ctx = gsap.context(() => {
+        const hero = document.querySelector(".hero-stage");
+        const updateHeader = (scrolled: boolean) => {
+          gsap.to(header, {
+            boxShadow: scrolled ? "0 8px 26px rgba(0, 0, 0, 0.08)" : "0 4px 20px rgba(0, 0, 0, 0)",
+            borderColor: scrolled ? "var(--border)" : "transparent",
+            duration: MOTION.duration.headerBackground,
+            ease: MOTION.ease.emphasis,
+            overwrite: "auto",
+          });
+        };
+        ScrollTrigger.create({
+          trigger: hero ?? header,
+          start: "bottom top",
+          onEnter: () => updateHeader(true),
+          onLeaveBack: () => updateHeader(false),
+        });
+      }, header);
+      return () => ctx.revert();
+    });
+    return () => media.revert();
+  }, []);
   useEffect(() => {
     if (!open && !searchOpen && !catsOpen) return;
     const previous = document.body.style.overflow;
@@ -47,18 +78,31 @@ export function Header() {
   useEffect(() => {
     if (!open) return;
     closeRef.current?.focus({ preventScroll: true });
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const ctx = gsap.context(() => {
-      gsap.from(".drawer-anim", { y: 16, opacity: 0, duration: 0.45, stagger: 0.05, delay: 0.12, ease: "power3.out" });
+    const media = gsap.matchMedia();
+    media.add("(prefers-reduced-motion: no-preference)", () => {
+      const menu = document.querySelector("#mobile-menu");
+      if (!menu) return;
+      const ctx = gsap.context(() => {
+        gsap.from(".drawer-anim", {
+          y: 16,
+          autoAlpha: 0,
+          duration: MOTION.duration.mobileMenuOpen,
+          stagger: MOTION.stagger.menu,
+          delay: 0.12,
+          ease: MOTION.ease.default,
+          overwrite: "auto",
+        });
+      }, menu);
+      return () => ctx.revert();
     });
-    return () => ctx.revert();
+    return () => media.revert();
   }, [open]);
   const submit = (e: React.FormEvent) => {
     e.preventDefault(); setOpen(false); setSearchOpen(false);
     navigate({ to: "/shop", search: { q: q.trim() || undefined } });
   };
   return (
-    <header className="site-header sticky top-0 z-40 bg-background">
+    <header ref={headerRef} className="site-header sticky top-0 z-40 bg-background">
       <div className="container-x navbar-row flex items-center justify-between gap-4">
         <Link to="/" aria-label="KEY-STEL home" className="shrink-0"><Brand /></Link>
         <nav aria-label="Main navigation" className="hidden items-center gap-7 lg:flex">
