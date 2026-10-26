@@ -30,12 +30,13 @@ export type Branch = {
   phone: string;
   main?: boolean;
   mapQuery: string;
+  mapUrl?: string;
 };
 
 // The two branch locations are not editable in the admin yet. Their phone is the store phone from Settings.
 export const BRANCHES: Branch[] = [
-  { name: "Kwabenya", area: "Kwabenya ACP Road, Accra", get phone() { return SITE.phone; }, main: true, mapQuery: "Kwabenya ACP Road, Accra, Ghana" },
-  { name: "Kasoa", area: "Kasoa, near MTTD", get phone() { return SITE.phone; }, mapQuery: "Kasoa MTTD, Ghana" },
+  { name: "Kwabenya", area: "Pokuase - Kwabenya Road, opposite Rhema Hospital", get phone() { return SITE.phone; }, main: true, mapQuery: "Pokuase - Kwabenya Road, opposite Rhema Hospital, Ghana" },
+  { name: "Kasoa", area: "Near Nurses on the Obom Road", get phone() { return SITE.phone; }, mapQuery: "5.591426,-0.418920", mapUrl: "https://goo.gl/maps/WiWuvqDbzgc5dUYA9?g_st=awb" },
 ];
 
 export const telLink = (phone: string) => {

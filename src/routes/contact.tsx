@@ -50,7 +50,7 @@ function Contact() {
                   <Phone className="h-5 w-5 shrink-0 text-primary" />
                   <span>{b.phone}</span>
                 </a>
-                <a href={mapLink(b.mapQuery)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-bold text-primary hover:underline">
+                <a href={b.mapUrl ?? mapLink(b.mapQuery)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-bold text-primary hover:underline">
                   Get directions <ArrowUpRight className="size-4"/>
                 </a>
               </div>
