@@ -55,27 +55,4 @@ Customers never log in. To change anything on the site (products, prices, photos
 
 ---
 
-## Technical details (for developers)
 
-**Stack:** _[fill in: e.g. React + Vite, Next.js, etc.]_, Supabase (Postgres, Row Level Security, Storage).
-
-**Run locally**
-
-```bash
-npm install
-npm run dev
-```
-
-**Production build**
-
-```bash
-npm run build
-```
-
-**Environment variables:** the Supabase URL and public (anon) key are required. Never commit a service-role key or a `.env` file.
-
-**Deployment:** hosted on Vercel and connected to GitHub. Pushing to `main` deploys automatically. The domain `key-stel.com` points to Vercel through DNS records set at the domain registrar.
-
-**Database:** shared with the admin dashboard (`key_stel_admin`). Changes to table structure or Row Level Security policies affect both projects, so test both after any change.
-
-**Supabase auth settings:** if the site uses any sign-in or email links, make sure `https://key-stel.com/**` is listed under Redirect URLs.
