@@ -9,7 +9,10 @@ import { buildStorefront } from "./storefront-data";
 export const fetchStorefront = createServerFn({ method: "GET" }).handler(async () => {
   const hasEnv = (process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"]) &&
     (process.env["SUPABASE_KEY"] || process.env["SUPABASE_PUBLISHABLE_KEY"] || process.env["VITE_SUPABASE_PUBLISHABLE_KEY"]);
-  if (!hasEnv) return buildStorefront({ categories: [], products: [], settings: null });
+  if (!hasEnv) {
+    console.warn("[storefront] SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY (or the VITE_ versions) are not set, so the shop is empty. Add them to the .env file next to package.json and restart the dev server.");
+    return buildStorefront({ categories: [], products: [], settings: null });
+  }
 
   const { publicClient } = await import("./supabase-public.server");
   const db = publicClient();
@@ -22,6 +25,9 @@ export const fetchStorefront = createServerFn({ method: "GET" }).handler(async (
   if (error) {
     console.error("[storefront] load failed:", error);
     throw new Error("Could not load the catalogue right now. Please try again.");
+  }
+  if (!(categories.data?.length || products.data?.length)) {
+    console.warn("[storefront] Connected, but the database returned 0 categories and 0 products. Check that the admin has products set to Shown, and that the public read policies (RLS) allow the anon role to read categories, products and settings.");
   }
   return buildStorefront({ categories: categories.data ?? [], products: products.data ?? [], settings: settings.data });
 });
