@@ -1,97 +1,81 @@
-# Key-Stel Admin
+# Key-Stel Website
 
-**The staff dashboard for Key-Stel, "Your Secured Partner!"**
+**Key-Stel: "Your Secured Partner!"**
 
-Key-Stel Admin is where your team manages the doors you sell, your stock, online orders, walk-in sales, customers and reports, all in one place.
+The public website for Key-Stel, a door shop. Customers can browse doors, see prices and availability, place an order, and send messages to the shop.
 
-- **Dashboard address:** https://admin.key-stel.com
-- **Works on:** computers, tablets and phones
-
-Everything you see is live data. There is no demo data. The public Key-Stel website uses the same database, so **any change to a door, price or stock level here appears on the website automatically.**
+- **Website:** https://key-stel.com
+- **Staff dashboard:** https://admin.key-stel.com (separate project, used by the shop team to manage everything you see here)
 
 ---
 
-## What you can do
+## What customers can do
 
-| Page | What it is for |
-|------|----------------|
-| **Overview** | A quick look at the last 7 days: revenue, best-selling doors, and sales by category group. |
-| **Point of Sale** | Record a sale made in the shop. Choose Cash, MoMo or Card, apply a discount, add a note and print a receipt. Stock reduces automatically. |
-| **Products** | Add, edit or delete doors: price, sizes, photos, stock, low-stock alert level, and whether a door is available or hidden. |
-| **Categories** | Organise doors into categories and category groups. |
-| **Inventory** | Update stock counts as doors come in and go out. Low stock is highlighted. |
-| **Orders** | Follow online and walk-in orders from Pending to Dispatched to Delivered. Mark orders paid or unpaid, print receipts, and search by order number, name or phone. |
-| **Customers** | A customer list built from orders, showing number of orders and total spent. Can be exported to CSV. |
-| **Messages** | Messages sent through the website contact form, with an unread counter. |
-| **Sales & Analytics** | Revenue by day, top products by revenue, and a payment method breakdown. |
-| **Reports** | Download sales, items sold, stock and customer reports as CSV files that open in Excel. |
-| **Staff & Access Control** | Add or remove staff and admins and reset passwords (admins only). |
-| **Settings** | Update store contact details shown on the website, receipt footer text, and your own sign-in name and password. |
-
-**Also included**
-
-- **Global search** across products, orders and customers.
-- **Notification bell** for pending orders, unread messages and low stock.
-- **Flexible sign-in** with either a short username or an email address.
-- **Forced password change** the first time new staff sign in.
+- **Browse doors** by category, with photos, sizes and prices.
+- **See availability.** Doors marked as hidden in the dashboard do not appear, and stock levels are kept up to date automatically.
+- **Place an order** by entering their name, phone number and delivery address.
+- **Contact the shop** through the contact form. Messages arrive in the dashboard under **Messages**.
+- **View store details** such as phone numbers and contact information, which the shop can change at any time from the dashboard's **Settings** page.
 
 ---
 
-## Getting started
+## How ordering works
 
-1. Open **https://admin.key-stel.com**.
-2. Sign in with your username (or email) and password.
-3. If this is your first time signing in, you will be asked to choose a new password.
-4. Forgot your password? Ask an admin to reset it from **Staff & Access Control**.
-
-### Who can do what
-
-| Role | Access |
-|------|--------|
-| **Superadmin** | Full access, including managing admins and staff. |
-| **Admin** | Full day-to-day access, including adding staff and resetting passwords. |
-| **Staff** | Day-to-day work such as sales, orders and stock. Cannot manage other users. |
+1. The customer chooses their doors and submits an order with their name, phone number and delivery address.
+2. The order appears instantly in the staff dashboard as **Pending** and **Unpaid**, and stock is reduced automatically.
+3. The Key-Stel team contacts the customer by phone or WhatsApp to confirm details and arrange payment.
+4. **There is no online payment on the website.** Payment is collected directly by the shop.
+5. Staff update the order to **Dispatched**, then **Delivered**, and mark it **Paid**.
 
 ---
 
-## How orders work
+## How the website and dashboard connect
 
-### Online orders
+The website and the staff dashboard share one database (Supabase). This means:
 
-1. A customer places an order on the website with their name, phone number and delivery address.
-2. The order appears in **Orders** as **Pending** and **Unpaid**, and stock is reduced automatically.
-3. Your team calls or messages the customer on WhatsApp, agrees the details and collects payment directly. *There is no online payment on the website.*
-4. Update the order to **Dispatched**, then **Delivered**, and mark it **Paid** once payment is received.
+| If staff do this in the dashboard | The website shows |
+|-----------------------------------|-------------------|
+| Add or edit a door, price or photo | The updated door and price |
+| Change stock levels | Updated availability |
+| Hide a door | The door disappears from the site |
+| Edit store contact details | The new details |
 
-### Walk-in sales
+| If a customer does this on the website | Staff see in the dashboard |
+|----------------------------------------|----------------------------|
+| Places an order | A new Pending order, with stock reduced |
+| Sends a contact message | A new unread message |
 
-Record these in **Point of Sale**. They are saved automatically as **Paid** and **Delivered**, and a receipt can be printed straight away.
+No manual syncing is needed.
 
 ---
 
-## Everyday tips
+## Managing the content
 
-- **Keep stock accurate.** Use **Inventory** whenever doors arrive or leave outside of a recorded sale. The website relies on these numbers.
-- **Hide instead of delete.** If a door is temporarily unavailable, set it to hidden in **Products** rather than deleting it.
-- **Set a low-stock alert level** on each door so you get warned before you run out.
-- **Check the notification bell** at the start of each day for pending orders and unread messages.
-- **Use Reports** at the end of the week or month for sales, stock and customer records you can open in Excel.
-- **Protect accounts.** Give each staff member their own login, never share passwords, and remove staff who leave.
+Customers never log in. To change anything on the site (products, prices, photos, stock, contact details), the shop team uses the dashboard at **https://admin.key-stel.com**.
 
 ---
 
 ## Technical details (for developers)
 
-**Stack:** React 18, Vite 5, Supabase (Postgres, Auth, Row Level Security, Storage), lucide-react icons, plain CSS.
+**Stack:** _[fill in: e.g. React + Vite, Next.js, etc.]_, Supabase (Postgres, Row Level Security, Storage).
 
+**Run locally**
 
+```bash
+npm install
+npm run dev
+```
 
-The output is created in `dist/`.
+**Production build**
 
-**Environment variables:** the Supabase URL and public (anon) key are configured in the project. Never commit a service-role key.
+```bash
+npm run build
+```
 
-**Deployment:** hosted on Vercel and connected to the GitHub repository. Pushing to `main` deploys automatically. The domain `admin.key-stel.com` is set up through a CNAME record in the domain's DNS.
+**Environment variables:** the Supabase URL and public (anon) key are required. Never commit a service-role key or a `.env` file.
 
-**Supabase auth settings:** Site URL is `https://admin.key-stel.com`, and the same address with `/**` is listed under Redirect URLs.
+**Deployment:** hosted on Vercel and connected to GitHub. Pushing to `main` deploys automatically. The domain `key-stel.com` points to Vercel through DNS records set at the domain registrar.
 
-**Related project:** the public storefront is a separate project that shares this Supabase database.
+**Database:** shared with the admin dashboard (`key_stel_admin`). Changes to table structure or Row Level Security policies affect both projects, so test both after any change.
+
+**Supabase auth settings:** if the site uses any sign-in or email links, make sure `https://key-stel.com/**` is listed under Redirect URLs.
