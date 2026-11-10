@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /order
+Disallow: /wishlist
 
-Sitemap: https://www.key-stel.com/sitemap.xml
-
+Sitemap: https://key-stel.com/sitemap.xml
